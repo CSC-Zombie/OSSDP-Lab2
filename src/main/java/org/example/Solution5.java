@@ -1,3 +1,5 @@
+package org.example;
+
 import java.util.Arrays;
 
 /**
@@ -41,7 +43,7 @@ import java.util.Arrays;
  * 1 <= target <= 106
  *
  */
-class Solution5 {
+public class Solution5 {
     static final int P = 1000000007;
     static final int MAX_N = 100005;
 
@@ -53,37 +55,51 @@ class Solution5 {
         Arrays.sort(nums);
 
         int ans = 0;
-        for (int i = 0; i < nums.length-1 && nums[i] * 2 <= target; ++i) {
+        int n = nums.length;
+        for (int i = 0; i < n && nums[i] * 2 <= target; ++i) {
             int maxValue = target - nums[i];
             int pos = binarySearch(nums, maxValue) - 1;
             int contribute = (pos >= i) ? f[pos - i] : 0;
-            ans = (ans + contribute) / P;
+            ans = (ans + contribute) % P; // 修正此处的计算
         }
 
         return ans;
     }
 
     public void pretreatment() {
-        f[0] = 0;
+        f[0] = 1; // 修正为1，表示空集
         for (int i = 1; i < MAX_N; ++i) {
-            f[i] = (f[i - 1] << 1) % P;
+            f[i] = (f[i - 1] * 2) % P; // 修正为乘以2
         }
     }
 
     public int binarySearch(int[] nums, int target) {
         int low = 0, high = nums.length;
-        while (low <= high) {
+        while (low < high) { // 修正条件为 low < high
             int mid = (high - low) / 2 + low;
-            if (mid == nums.length) {
-                return mid;
-            }
-            int num = nums[mid];
-            if (num <= target) {
+            if (nums[mid] <= target) {
                 low = mid + 1;
             } else {
                 high = mid;
             }
         }
         return low;
+    }
+
+    public static void main(String[] args) {
+        Solution5 solution = new Solution5();
+
+        // 示例输入
+        int[] nums1 = {3, 5, 6, 7};
+        int target1 = 9;
+        System.out.println(solution.numSubseq(nums1, target1)); // 输出应为4
+
+        int[] nums2 = {3, 3, 6, 8};
+        int target2 = 10;
+        System.out.println(solution.numSubseq(nums2, target2)); // 输出应为6
+
+        int[] nums3 = {2, 3, 3, 4, 6, 7};
+        int target3 = 12;
+        System.out.println(solution.numSubseq(nums3, target3)); // 输出应为61
     }
 }
